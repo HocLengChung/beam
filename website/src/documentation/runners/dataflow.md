@@ -86,6 +86,28 @@ In some cases, such as starting a pipeline using a scheduler such as [Apache Air
 ```
 
 {:.language-java}
+Then, adde the Maven dependency plugin to add all dependencies inside the libs folder. This will ensure that when you run the <code>mvn package</code> command, the libs folder will contain all jar files needed for your dataflow job to run.
+```java
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-dependency-plugin</artifactId>
+    <version>${maven-dependency-plugin.version}</version>
+    <executions>
+        <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+                <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+                <outputDirectory>
+                    ${project.build.directory}/libs
+                </outputDirectory>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
 Then, add the mainClass name in the Maven JAR plugin.
 
 ```java
@@ -97,13 +119,14 @@ Then, add the mainClass name in the Maven JAR plugin.
     <archive>
       <manifest>
         <addClasspath>true</addClasspath>
-        <classpathPrefix>lib/</classpathPrefix>
+        <classpathPrefix>libs/</classpathPrefix>
         <mainClass>YOUR_MAIN_CLASS_NAME</mainClass>
       </manifest>
     </archive>
   </configuration>
 </plugin>
 ```
+
 
 {:.language-java}
 After running <code>mvn package</code>, run <code>ls target</code> and you should see (assuming your artifactId is `beam-examples` and the version is 1.0.0) the following output.
